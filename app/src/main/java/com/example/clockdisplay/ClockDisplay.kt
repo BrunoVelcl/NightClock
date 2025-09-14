@@ -1,8 +1,13 @@
 package com.example.clockdisplay
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -19,9 +24,15 @@ import java.time.LocalTime
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.intl.Locale
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
-
+import kotlinx.serialization.StringFormat
 
 
 @Composable
@@ -44,13 +55,33 @@ fun CLockDisplay(
             .background(color = Color.Black),
         contentAlignment = Alignment.Center
     ) {
-        Text(
-            text = currentTime.minusNanos(currentTime.nano.toLong()).toString(),
-            fontSize = 80.sp,
-            fontWeight = FontWeight.ExtraBold,
-            color = Color.Green,
-            maxLines = 1,
-        )
+        Column( verticalArrangement = Arrangement.Bottom) {
+            Row(
+                verticalAlignment = Alignment.Bottom
+            ) {
+                Text(
+                    text = "${"%02d".format(currentTime.hour)}:${"%02d".format(currentTime.minute)}",
+                    fontFamily = FontFamily(Font(R.font.digital_display)),
+                    fontSize = 96.sp,
+                    fontWeight = FontWeight.Normal,
+                    color = Color.Green,
+                    maxLines = 1,
+                    )
+
+                Box(
+                ) {
+                    Text(
+                        modifier = modifier.offset(y = (0).dp),
+                        text = "%02d".format(currentTime.second),
+                        fontFamily = FontFamily(Font(R.font.digital_display)),
+                        fontSize = 56.sp,
+                        fontWeight = FontWeight.Normal,
+                        color = Color.Green,
+                        maxLines = 1,
+                    )
+                }
+            }
+    }
     }
 
 
