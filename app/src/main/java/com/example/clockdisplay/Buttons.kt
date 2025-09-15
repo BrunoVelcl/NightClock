@@ -40,7 +40,7 @@ fun OptionButton(
             Icon(
                 modifier = modifier
                     .scale(scaleX = 2f, scaleY = 2f)
-                    .rotate(iconOrientation.degress),
+                    .rotate(iconOrientation.degrees),
                 painter = painter,
                 contentDescription = null
             )
