@@ -38,12 +38,14 @@ fun CLockDisplay(
     modifier: Modifier = Modifier,
     colorIdx: Int,
     fontIdx: Int,
-    callback: (Int, Int) -> Unit
+    styleIdx: Int,
+    callback: (Int, Int, Int) -> Unit
 ) {
     var currentTime by remember { mutableStateOf(LocalTime.now()) }
     var secondsCounter by remember { mutableIntStateOf(1) }
     var submenuVisible by remember { mutableStateOf(false) }
     var submenuHideBoundary by remember { mutableIntStateOf(0) }
+    var delimiterBlinking by remember { mutableStateOf(false) }
 
     val colors = arrayOf(
         Color.Green,
@@ -60,9 +62,12 @@ fun CLockDisplay(
             //Sleep until the next second
             currentTime = LocalTime.now()
             delay((1000 - currentTime.nano / 1000000).toLong())
-            if(secondsCounter > -1) secondsCounter++
-            else { secondsCounter = 1; submenuHideBoundary = 0}
+            if (secondsCounter > -1) secondsCounter++
+            else {
+                secondsCounter = 1; submenuHideBoundary = 0
+            }
             submenuVisible = submenuHideBoundary > secondsCounter
+            delimiterBlinking = !delimiterBlinking
         }
     }
 
@@ -74,21 +79,42 @@ fun CLockDisplay(
         contentAlignment = Alignment.Center
     ) {
 
-        Column{
+        Column {
             Row(
                 modifier = modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center
-            ){
-                Column {
-                    OptionButton(
-                        enabled = submenuVisible,
-                        painter = painterResource(R.drawable.expand_circle_up)
-                    ) {
-                        if(colorIdx == colors.size-1) callback ( 0, fontIdx)
-                        else callback(colorIdx +1, fontIdx )
-                        submenuHideBoundary = secondsCounter + 5
-                    }
+            ) {
+
+
+                OptionButton(
+                    enabled = submenuVisible,
+                    painter = painterResource(R.drawable.alarm_smart_wake_24dp_1f1f1f_fill0_wght400_grad0_opsz24)
+                ) {
+                    if(styleIdx == 0) callback(colorIdx, fontIdx, 1)
+                    else callback(colorIdx, fontIdx, 0)
+                    submenuHideBoundary = secondsCounter + 5
                 }
+
+
+                Spacer(modifier = modifier.width(40.dp))
+
+
+                OptionButton(
+                    enabled = submenuVisible,
+                    painter = painterResource(R.drawable.expand_circle_up)
+                ) {
+                    if (colorIdx == colors.size - 1) callback(0, fontIdx, styleIdx)
+                    else callback(colorIdx + 1, fontIdx, styleIdx)
+                    submenuHideBoundary = secondsCounter + 5
+                }
+
+
+                Spacer(
+                    modifier = modifier.width(88.dp)
+                )
+
+
+
             }
             Row(
                 modifier = modifier.fillMaxWidth(),
@@ -96,7 +122,7 @@ fun CLockDisplay(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Button(
-                    onClick = {submenuHideBoundary = secondsCounter + 5},
+                    onClick = { submenuHideBoundary = secondsCounter + 5 },
                     colors = ButtonColors(
                         contentColor = Color.Transparent,
                         containerColor = Color.Transparent,
@@ -109,7 +135,11 @@ fun CLockDisplay(
                             verticalAlignment = Alignment.Bottom
                         ) {
                             Text(
-                                text = "${"%02d".format(currentTime.hour)}:${
+                                text = "${"%02d".format(currentTime.hour)}${
+                                    returnDelimiter(
+                                        delimiterBlinking, styleIdx
+                                    )
+                                }${
                                     "%02d".format(
                                         currentTime.minute
                                     )
@@ -120,17 +150,18 @@ fun CLockDisplay(
                                 color = colors[colorIdx],
                                 maxLines = 1,
                             )
-
-                            Box{
-                                Text(
-                                    modifier = modifier.offset(y = (0).dp),
-                                    text = "%02d".format(currentTime.second),
-                                    fontFamily = fontArray[fontIdx].font,
-                                    fontSize = fontArray[fontIdx].sizeSmaller,
-                                    fontWeight = fontArray[fontIdx].weight,
-                                    color = colors[colorIdx],
-                                    maxLines = 1,
-                                )
+                            if (styleIdx == 1) {
+                                Box {
+                                    Text(
+                                        modifier = modifier.offset(y = (0).dp),
+                                        text = "%02d".format(currentTime.second),
+                                        fontFamily = fontArray[fontIdx].font,
+                                        fontSize = fontArray[fontIdx].sizeSmaller,
+                                        fontWeight = fontArray[fontIdx].weight,
+                                        color = colors[colorIdx],
+                                        maxLines = 1,
+                                    )
+                                }
                             }
                         }
                     }
@@ -145,8 +176,8 @@ fun CLockDisplay(
                     painter = painterResource(R.drawable.expand_circle_up),
                     iconOrientation = Orientation.LEFT
                 ) {
-                    if(fontIdx == 0) callback(colorIdx, fontArray.size - 1)
-                    else callback(colorIdx, fontIdx -1)
+                    if (fontIdx == 0) callback(colorIdx, fontArray.size - 1, styleIdx)
+                    else callback(colorIdx, fontIdx - 1, styleIdx)
                     submenuHideBoundary = secondsCounter + 5
                 }
                 Spacer(
@@ -157,8 +188,8 @@ fun CLockDisplay(
                     painter = painterResource(R.drawable.expand_circle_up),
                     iconOrientation = Orientation.DOWN
                 ) {
-                    if(colorIdx == 0) callback(colors.size -1, fontIdx)
-                    else callback(colorIdx - 1, fontIdx)
+                    if (colorIdx == 0) callback(colors.size - 1, fontIdx, styleIdx)
+                    else callback(colorIdx - 1, fontIdx, styleIdx)
                     submenuHideBoundary = secondsCounter + 5
                 }
                 Spacer(
@@ -169,8 +200,8 @@ fun CLockDisplay(
                     painter = painterResource(R.drawable.expand_circle_up),
                     iconOrientation = Orientation.RIGHT
                 ) {
-                    if(fontIdx == fontArray.size -1) callback(colorIdx, 0)
-                    else callback(colorIdx, fontIdx + 1)
+                    if (fontIdx == fontArray.size - 1) callback(colorIdx, 0, styleIdx)
+                    else callback(colorIdx, fontIdx + 1, styleIdx)
                     submenuHideBoundary = secondsCounter + 5
                 }
             }
@@ -178,6 +209,10 @@ fun CLockDisplay(
     }
 
 
+}
+
+fun returnDelimiter(switch: Boolean, styleIdx: Int): Char {
+    return if (switch && styleIdx == 0) ' ' else ':'
 }
 
 @Suppress("ALL")
@@ -192,7 +227,8 @@ fun Preview() {
             CLockDisplay(
                 colorIdx = 0,
                 fontIdx = 0,
-                callback = {c, f -> }
+                styleIdx = 1,
+                callback = { c, f, s -> }
             )
         }
     }

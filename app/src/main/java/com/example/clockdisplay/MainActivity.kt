@@ -21,12 +21,13 @@ class MainActivity : ComponentActivity() {
 
     var colorIdx: Int = 0
     var fontIdx: Int = 0
+    var styleIdx: Int = 0
     override fun onCreate(savedInstanceState: Bundle?) {
 
         val prefs = getSharedPreferences("save", MODE_PRIVATE)
             colorIdx = prefs.getInt("colorIdx", 0)
             fontIdx = prefs.getInt("fontIdx", 0)
-
+            styleIdx = prefs.getInt("styleIdx", 0)
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
@@ -35,16 +36,20 @@ class MainActivity : ComponentActivity() {
             ) {
                 var compColorIndex by rememberSaveable { mutableIntStateOf(colorIdx) }
                 var compFontIndex by rememberSaveable { mutableIntStateOf(fontIdx) }
+                var compStyleIndex by rememberSaveable { mutableIntStateOf(styleIdx) }
                 Surface {
                     CLockDisplay(
                         colorIdx = compColorIndex,
                         fontIdx = compFontIndex,
+                        styleIdx = compStyleIndex,
                         callback = {
-                                   c, f ->
+                                   c, f, s->
                             colorIdx = c
                             compColorIndex = c
                             fontIdx = f
                             compFontIndex = f
+                            styleIdx = s
+                            compStyleIndex = s
                         }
 
                     )
@@ -69,6 +74,7 @@ class MainActivity : ComponentActivity() {
         prefs.edit {
             putInt("colorIdx", colorIdx)
                 .putInt("fontIdx", fontIdx)
+                .putInt("styleIdx", styleIdx)
         }
     }
 }

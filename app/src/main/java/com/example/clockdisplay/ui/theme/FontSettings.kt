@@ -38,7 +38,8 @@ fun Preview() {
             CLockDisplay(
                 colorIdx = 0,
                 fontIdx = 0,
-                callback = {c, f -> }
+                styleIdx = 0,
+                callback = {c, f,s -> }
             )
         }
     }
