@@ -14,12 +14,27 @@ import com.example.clockdisplay.ui.theme.colors
 import com.example.clockdisplay.ui.theme.fontArray
 import java.time.LocalTime
 
-enum class ClockStyle(){
-    DIGITAL_HEARTBEAT,
-    DIGITAL_SECONDS,
-}
+enum class ClockStyle(val value:Int){
+    DIGITAL_HEARTBEAT(0),
+    DIGITAL_SECONDS(1);
 
-val clockStyles = arrayOf(ClockStyle.DIGITAL_HEARTBEAT, ClockStyle.DIGITAL_SECONDS)
+    companion object {
+        fun fromValue(value: Int): ClockStyle {
+            for (style in ClockStyle.entries) {
+                if (value == style.value) {
+                    return style
+                }
+            }
+            throw IllegalArgumentException("Unsuported value in ClockStyle.")
+        }
+    }
+
+    fun next(): ClockStyle{
+        if(this.value >= ClockStyle.entries.size - 1)
+            return ClockStyle.fromValue(0)
+        return ClockStyle.fromValue(this.value + 1)
+    }
+}
 
 @Composable
 fun DigitalHartbeat(
@@ -34,9 +49,7 @@ fun DigitalHartbeat(
         ) {
             Text(
                 text = "${"%02d".format(currentTime.hour)}${
-                    returnDelimiter(
-                        delimiterBlinking, clockVisual.styleIdx
-                    )
+                    returnDelimiter(delimiterBlinking)
                 }${
                     "%02d".format(
                         currentTime.minute
@@ -52,8 +65,8 @@ fun DigitalHartbeat(
     }
 }
 
-fun returnDelimiter(switch: Boolean, styleIdx: Int): Char {
-    return if (switch && styleIdx == 0) ' ' else ':'
+fun returnDelimiter(switch: Boolean): Char {
+    return if (switch) ' ' else ':'
 }
 
 @Composable
@@ -68,11 +81,7 @@ fun DigitalSeconds(
             verticalAlignment = Alignment.Bottom
         ) {
             Text(
-                text = "${"%02d".format(currentTime.hour)}${
-                    returnDelimiter(
-                        delimiterBlinking, clockVisual.styleIdx
-                    )
-                }${
+                text = "${"%02d".format(currentTime.hour)}:${
                     "%02d".format(
                         currentTime.minute
                     )

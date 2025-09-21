@@ -8,12 +8,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
@@ -81,14 +79,8 @@ fun CLockDisplay(
                     enabled = submenuVisible,
                     painter = painterResource(R.drawable.alarm_smart_wake_24dp_1f1f1f_fill0_wght400_grad0_opsz24)
                 ) {
-                    if(clockVisual.styleIdx == 0) {
-                        clockVisual.styleIdx = 1
-                        callback(clockVisual)
-                    }
-                    else{
-                        clockVisual.styleIdx = 0
-                        callback(clockVisual)
-                    }
+                    clockVisual.styleIdx = clockVisual.styleIdx.next()
+                    callback(clockVisual)
                     submenuHideBoundary = secondsCounter + 5
                 }
 
@@ -100,11 +92,10 @@ fun CLockDisplay(
                     enabled = submenuVisible,
                     painter = painterResource(R.drawable.expand_circle_up)
                 ) {
-                    if (clockVisual.colorIdx == colors.size - 1){
+                    if (clockVisual.colorIdx == colors.size - 1) {
                         clockVisual.colorIdx = 0
                         callback(clockVisual)
-                    }
-                    else{
+                    } else {
                         clockVisual.colorIdx += 1
                         callback(clockVisual)
                     }
@@ -115,7 +106,6 @@ fun CLockDisplay(
                 Spacer(
                     modifier = modifier.width(88.dp)
                 )
-
 
 
             }
@@ -133,13 +123,14 @@ fun CLockDisplay(
                         disabledContainerColor = Color.Transparent,
                     )
                 ) {
-                    when(clockStyles[clockVisual.styleIdx]){
+                    when (clockVisual.styleIdx) {
                         ClockStyle.DIGITAL_HEARTBEAT -> DigitalHartbeat(
                             modifier = modifier,
                             currentTime = currentTime,
                             clockVisual = clockVisual,
                             delimiterBlinking = delimiterBlinking
                         )
+
                         ClockStyle.DIGITAL_SECONDS -> DigitalSeconds(
                             modifier = modifier,
                             currentTime = currentTime,
@@ -161,8 +152,7 @@ fun CLockDisplay(
                     if (clockVisual.fontIdx == 0) {
                         clockVisual.fontIdx = fontArray.size - 1
                         callback(clockVisual)
-                    }
-                    else{
+                    } else {
                         clockVisual.fontIdx -= 1
                         callback(clockVisual)
                     }
@@ -176,11 +166,10 @@ fun CLockDisplay(
                     painter = painterResource(R.drawable.expand_circle_up),
                     iconOrientation = Orientation.DOWN
                 ) {
-                    if (clockVisual.colorIdx == 0){
+                    if (clockVisual.colorIdx == 0) {
                         clockVisual.colorIdx = colors.size - 1
                         callback(clockVisual)
-                    }
-                    else {
+                    } else {
                         clockVisual.colorIdx -= 1
                         callback(clockVisual)
                     }
@@ -194,11 +183,10 @@ fun CLockDisplay(
                     painter = painterResource(R.drawable.expand_circle_up),
                     iconOrientation = Orientation.RIGHT
                 ) {
-                    if (clockVisual.fontIdx == fontArray.size - 1){
+                    if (clockVisual.fontIdx == fontArray.size - 1) {
                         clockVisual.fontIdx = 0
                         callback(clockVisual)
-                    }
-                    else {
+                    } else {
                         clockVisual.fontIdx += 1
                         callback(clockVisual)
                     }
@@ -212,7 +200,6 @@ fun CLockDisplay(
 }
 
 
-
 @Suppress("ALL")
 @Preview(showBackground = true)
 @Composable
@@ -223,7 +210,7 @@ fun Preview() {
 
         Surface {
             CLockDisplay(
-               clockVisual = ClockVisual(6,8,1),
+                clockVisual = ClockVisual(6, 8, ClockStyle.DIGITAL_HEARTBEAT),
                 callback = { cv -> }
             )
         }

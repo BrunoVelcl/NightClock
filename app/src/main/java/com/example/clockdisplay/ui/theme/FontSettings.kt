@@ -10,6 +10,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
 import com.example.clockdisplay.CLockDisplay
+import com.example.clockdisplay.ClockStyle
 import com.example.clockdisplay.ClockVisual
 import com.example.clockdisplay.R
 
@@ -48,7 +49,7 @@ fun Preview() {
 
         Surface {
             CLockDisplay(
-                clockVisual = ClockVisual(0,0,0),
+                clockVisual = ClockVisual(0,0, ClockStyle.DIGITAL_HEARTBEAT),
                 callback = {cv-> }
             )
         }

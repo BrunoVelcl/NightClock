@@ -8,7 +8,6 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.core.view.WindowCompat
@@ -24,13 +23,13 @@ class MainActivity : ComponentActivity() {
 //    var fontIdx: Int = 0
 //    var styleIdx: Int = 0
 
-    var clockVisual = ClockVisual(0,0,0);
+    var clockVisual = ClockVisual(0,0, ClockStyle.DIGITAL_HEARTBEAT);
     override fun onCreate(savedInstanceState: Bundle?) {
 
         val prefs = getSharedPreferences("save", MODE_PRIVATE)
             clockVisual.colorIdx = prefs.getInt("colorIdx", 0)
             clockVisual.fontIdx = prefs.getInt("fontIdx", 0)
-            clockVisual.styleIdx = prefs.getInt("styleIdx", 0)
+            clockVisual.styleIdx = ClockStyle.fromValue(prefs.getInt("styleIdx", 0))
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
@@ -39,17 +38,17 @@ class MainActivity : ComponentActivity() {
             ) {
                 var colorIdx by rememberSaveable { mutableIntStateOf(clockVisual.colorIdx) }
                 var fontIdx by rememberSaveable { mutableIntStateOf(clockVisual.fontIdx) }
-                var styleIdx by rememberSaveable { mutableIntStateOf(clockVisual.styleIdx) }
+                var styleIdx by rememberSaveable { mutableIntStateOf(clockVisual.styleIdx.value) }
 
                 Surface {
                     CLockDisplay(
-                        clockVisual = ClockVisual(colorIdx, fontIdx, styleIdx),
+                        clockVisual = ClockVisual(colorIdx, fontIdx, ClockStyle.fromValue(styleIdx)),
                         callback = {
                                    cv->
                             clockVisual = cv
                             colorIdx = cv.colorIdx
                             fontIdx = cv.fontIdx
-                            styleIdx = cv.styleIdx
+                            styleIdx = cv.styleIdx.value
                         }
                     )
                 }
@@ -72,7 +71,7 @@ class MainActivity : ComponentActivity() {
         prefs.edit {
             putInt("colorIdx", clockVisual.colorIdx)
                 .putInt("fontIdx", clockVisual.fontIdx)
-                .putInt("styleIdx", clockVisual.styleIdx)
+                .putInt("styleIdx", clockVisual.styleIdx.value)
         }
     }
 }
