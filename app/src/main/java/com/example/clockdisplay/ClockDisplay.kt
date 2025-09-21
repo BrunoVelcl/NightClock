@@ -124,7 +124,7 @@ fun CLockDisplay(
                     )
                 ) {
                     when (clockVisual.styleIdx) {
-                        ClockStyle.DIGITAL_HEARTBEAT -> DigitalHartbeat(
+                        ClockStyle.DIGITAL_HEARTBEAT -> DigitalHeartbeat(
                             modifier = modifier,
                             currentTime = currentTime,
                             clockVisual = clockVisual,
@@ -134,8 +134,20 @@ fun CLockDisplay(
                         ClockStyle.DIGITAL_SECONDS -> DigitalSeconds(
                             modifier = modifier,
                             currentTime = currentTime,
+                            clockVisual = clockVisual
+                        )
+
+                        ClockStyle.TWELVE_HOUR_HEARTBEAT -> DigitalHeartbeatTwelveHourFormat(
+                            modifier = modifier,
+                            currentTime = currentTime,
                             clockVisual = clockVisual,
                             delimiterBlinking = delimiterBlinking
+                        )
+
+                        ClockStyle.TWELVE_HOUR_SECONDS -> DigitalSecondsTwelveHourTime(
+                            modifier = modifier,
+                            currentTime = currentTime,
+                            clockVisual = clockVisual
                         )
                     }
                 }
