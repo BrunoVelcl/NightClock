@@ -8,6 +8,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.core.view.WindowCompat
@@ -19,41 +20,38 @@ import androidx.core.content.edit
 
 class MainActivity : ComponentActivity() {
 
-    var colorIdx: Int = 0
-    var fontIdx: Int = 0
-    var styleIdx: Int = 0
+//    var colorIdx: Int = 0
+//    var fontIdx: Int = 0
+//    var styleIdx: Int = 0
+
+    var clockVisual = ClockVisual(0,0,0);
     override fun onCreate(savedInstanceState: Bundle?) {
 
         val prefs = getSharedPreferences("save", MODE_PRIVATE)
-            colorIdx = prefs.getInt("colorIdx", 0)
-            fontIdx = prefs.getInt("fontIdx", 0)
-            styleIdx = prefs.getInt("styleIdx", 0)
+            clockVisual.colorIdx = prefs.getInt("colorIdx", 0)
+            clockVisual.fontIdx = prefs.getInt("fontIdx", 0)
+            clockVisual.styleIdx = prefs.getInt("styleIdx", 0)
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             ClockDisplayTheme(
                 dynamicColor = false
             ) {
-                var compColorIndex by rememberSaveable { mutableIntStateOf(colorIdx) }
-                var compFontIndex by rememberSaveable { mutableIntStateOf(fontIdx) }
-                var compStyleIndex by rememberSaveable { mutableIntStateOf(styleIdx) }
+                var colorIdx by rememberSaveable { mutableIntStateOf(clockVisual.colorIdx) }
+                var fontIdx by rememberSaveable { mutableIntStateOf(clockVisual.fontIdx) }
+                var styleIdx by rememberSaveable { mutableIntStateOf(clockVisual.styleIdx) }
+
                 Surface {
                     CLockDisplay(
-                        colorIdx = compColorIndex,
-                        fontIdx = compFontIndex,
-                        styleIdx = compStyleIndex,
+                        clockVisual = ClockVisual(colorIdx, fontIdx, styleIdx),
                         callback = {
-                                   c, f, s->
-                            colorIdx = c
-                            compColorIndex = c
-                            fontIdx = f
-                            compFontIndex = f
-                            styleIdx = s
-                            compStyleIndex = s
+                                   cv->
+                            clockVisual = cv
+                            colorIdx = cv.colorIdx
+                            fontIdx = cv.fontIdx
+                            styleIdx = cv.styleIdx
                         }
-
                     )
-
                 }
             }
         }
@@ -72,9 +70,9 @@ class MainActivity : ComponentActivity() {
 
         val prefs = getSharedPreferences("save", MODE_PRIVATE)
         prefs.edit {
-            putInt("colorIdx", colorIdx)
-                .putInt("fontIdx", fontIdx)
-                .putInt("styleIdx", styleIdx)
+            putInt("colorIdx", clockVisual.colorIdx)
+                .putInt("fontIdx", clockVisual.fontIdx)
+                .putInt("styleIdx", clockVisual.styleIdx)
         }
     }
 }

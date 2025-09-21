@@ -30,16 +30,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.clockdisplay.ui.theme.fontArray
+import com.example.clockdisplay.ui.theme.colors
 import kotlinx.coroutines.delay
 
 
 @Composable
 fun CLockDisplay(
     modifier: Modifier = Modifier,
-    colorIdx: Int,
-    fontIdx: Int,
-    styleIdx: Int,
-    callback: (Int, Int, Int) -> Unit
+    clockVisual: ClockVisual,
+    callback: (ClockVisual) -> Unit
 ) {
     var currentTime by remember { mutableStateOf(LocalTime.now()) }
     var secondsCounter by remember { mutableIntStateOf(1) }
@@ -47,15 +46,7 @@ fun CLockDisplay(
     var submenuHideBoundary by remember { mutableIntStateOf(0) }
     var delimiterBlinking by remember { mutableStateOf(false) }
 
-    val colors = arrayOf(
-        Color.Green,
-        Color.Blue,
-        Color.White,
-        Color.Magenta,
-        Color.Yellow,
-        Color.Red,
-        Color.Cyan
-    )
+
     //CLock logic
     LaunchedEffect(Unit) {
         while (true) {
@@ -90,8 +81,14 @@ fun CLockDisplay(
                     enabled = submenuVisible,
                     painter = painterResource(R.drawable.alarm_smart_wake_24dp_1f1f1f_fill0_wght400_grad0_opsz24)
                 ) {
-                    if(styleIdx == 0) callback(colorIdx, fontIdx, 1)
-                    else callback(colorIdx, fontIdx, 0)
+                    if(clockVisual.styleIdx == 0) {
+                        clockVisual.styleIdx = 1
+                        callback(clockVisual)
+                    }
+                    else{
+                        clockVisual.styleIdx = 0
+                        callback(clockVisual)
+                    }
                     submenuHideBoundary = secondsCounter + 5
                 }
 
@@ -103,8 +100,14 @@ fun CLockDisplay(
                     enabled = submenuVisible,
                     painter = painterResource(R.drawable.expand_circle_up)
                 ) {
-                    if (colorIdx == colors.size - 1) callback(0, fontIdx, styleIdx)
-                    else callback(colorIdx + 1, fontIdx, styleIdx)
+                    if (clockVisual.colorIdx == colors.size - 1){
+                        clockVisual.colorIdx = 0
+                        callback(clockVisual)
+                    }
+                    else{
+                        clockVisual.colorIdx += 1
+                        callback(clockVisual)
+                    }
                     submenuHideBoundary = secondsCounter + 5
                 }
 
@@ -137,28 +140,28 @@ fun CLockDisplay(
                             Text(
                                 text = "${"%02d".format(currentTime.hour)}${
                                     returnDelimiter(
-                                        delimiterBlinking, styleIdx
+                                        delimiterBlinking, clockVisual.styleIdx
                                     )
                                 }${
                                     "%02d".format(
                                         currentTime.minute
                                     )
                                 }",
-                                fontFamily = fontArray[fontIdx].font,
-                                fontSize = fontArray[fontIdx].size,
-                                fontWeight = fontArray[fontIdx].weight,
-                                color = colors[colorIdx],
+                                fontFamily = fontArray[clockVisual.fontIdx].font,
+                                fontSize = fontArray[clockVisual.fontIdx].size,
+                                fontWeight = fontArray[clockVisual.fontIdx].weight,
+                                color = colors[clockVisual.colorIdx],
                                 maxLines = 1,
                             )
-                            if (styleIdx == 1) {
+                            if (clockVisual.styleIdx == 1) {
                                 Box {
                                     Text(
                                         modifier = modifier.offset(y = (0).dp),
                                         text = "%02d".format(currentTime.second),
-                                        fontFamily = fontArray[fontIdx].font,
-                                        fontSize = fontArray[fontIdx].sizeSmaller,
-                                        fontWeight = fontArray[fontIdx].weight,
-                                        color = colors[colorIdx],
+                                        fontFamily = fontArray[clockVisual.fontIdx].font,
+                                        fontSize = fontArray[clockVisual.fontIdx].sizeSmaller,
+                                        fontWeight = fontArray[clockVisual.fontIdx].weight,
+                                        color = colors[clockVisual.colorIdx],
                                         maxLines = 1,
                                     )
                                 }
@@ -176,8 +179,14 @@ fun CLockDisplay(
                     painter = painterResource(R.drawable.expand_circle_up),
                     iconOrientation = Orientation.LEFT
                 ) {
-                    if (fontIdx == 0) callback(colorIdx, fontArray.size - 1, styleIdx)
-                    else callback(colorIdx, fontIdx - 1, styleIdx)
+                    if (clockVisual.fontIdx == 0) {
+                        clockVisual.fontIdx = fontArray.size - 1
+                        callback(clockVisual)
+                    }
+                    else{
+                        clockVisual.fontIdx -= 1
+                        callback(clockVisual)
+                    }
                     submenuHideBoundary = secondsCounter + 5
                 }
                 Spacer(
@@ -188,8 +197,14 @@ fun CLockDisplay(
                     painter = painterResource(R.drawable.expand_circle_up),
                     iconOrientation = Orientation.DOWN
                 ) {
-                    if (colorIdx == 0) callback(colors.size - 1, fontIdx, styleIdx)
-                    else callback(colorIdx - 1, fontIdx, styleIdx)
+                    if (clockVisual.colorIdx == 0){
+                        clockVisual.colorIdx = colors.size - 1
+                        callback(clockVisual)
+                    }
+                    else {
+                        clockVisual.colorIdx -= 1
+                        callback(clockVisual)
+                    }
                     submenuHideBoundary = secondsCounter + 5
                 }
                 Spacer(
@@ -200,8 +215,14 @@ fun CLockDisplay(
                     painter = painterResource(R.drawable.expand_circle_up),
                     iconOrientation = Orientation.RIGHT
                 ) {
-                    if (fontIdx == fontArray.size - 1) callback(colorIdx, 0, styleIdx)
-                    else callback(colorIdx, fontIdx + 1, styleIdx)
+                    if (clockVisual.fontIdx == fontArray.size - 1){
+                        clockVisual.fontIdx = 0
+                        callback(clockVisual)
+                    }
+                    else {
+                        clockVisual.fontIdx += 1
+                        callback(clockVisual)
+                    }
                     submenuHideBoundary = secondsCounter + 5
                 }
             }
@@ -225,10 +246,8 @@ fun Preview() {
 
         Surface {
             CLockDisplay(
-                colorIdx = 0,
-                fontIdx = 0,
-                styleIdx = 1,
-                callback = { c, f, s -> }
+               clockVisual = ClockVisual(6,8,0),
+                callback = { cv -> }
             )
         }
     }

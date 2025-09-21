@@ -2,6 +2,7 @@ package com.example.clockdisplay.ui.theme
 
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -9,6 +10,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
 import com.example.clockdisplay.CLockDisplay
+import com.example.clockdisplay.ClockVisual
 import com.example.clockdisplay.R
 
 class FontSettings (val font: FontFamily, val size: TextUnit = 80.sp, val sizeSmaller: TextUnit = 56.sp, val weight: FontWeight = FontWeight.Normal)
@@ -27,6 +29,16 @@ val fontArray = arrayOf(
     FontSettings(font = FontFamily(Font(R.font.tourner)), size = 80.sp, sizeSmaller = 40.sp),
 )
 
+val colors = arrayOf(
+    Color.Green,
+    Color.Blue,
+    Color.White,
+    Color.Magenta,
+    Color.Yellow,
+    Color.Red,
+    Color.Cyan
+)
+
 @Preview(showBackground = true)
 @Composable
 fun Preview() {
@@ -36,10 +48,8 @@ fun Preview() {
 
         Surface {
             CLockDisplay(
-                colorIdx = 0,
-                fontIdx = 0,
-                styleIdx = 0,
-                callback = {c, f,s -> }
+                clockVisual = ClockVisual(0,0,0),
+                callback = {cv-> }
             )
         }
     }
