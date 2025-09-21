@@ -133,40 +133,19 @@ fun CLockDisplay(
                         disabledContainerColor = Color.Transparent,
                     )
                 ) {
-                    Column(verticalArrangement = Arrangement.Bottom) {
-                        Row(
-                            verticalAlignment = Alignment.Bottom
-                        ) {
-                            Text(
-                                text = "${"%02d".format(currentTime.hour)}${
-                                    returnDelimiter(
-                                        delimiterBlinking, clockVisual.styleIdx
-                                    )
-                                }${
-                                    "%02d".format(
-                                        currentTime.minute
-                                    )
-                                }",
-                                fontFamily = fontArray[clockVisual.fontIdx].font,
-                                fontSize = fontArray[clockVisual.fontIdx].size,
-                                fontWeight = fontArray[clockVisual.fontIdx].weight,
-                                color = colors[clockVisual.colorIdx],
-                                maxLines = 1,
-                            )
-                            if (clockVisual.styleIdx == 1) {
-                                Box {
-                                    Text(
-                                        modifier = modifier.offset(y = (0).dp),
-                                        text = "%02d".format(currentTime.second),
-                                        fontFamily = fontArray[clockVisual.fontIdx].font,
-                                        fontSize = fontArray[clockVisual.fontIdx].sizeSmaller,
-                                        fontWeight = fontArray[clockVisual.fontIdx].weight,
-                                        color = colors[clockVisual.colorIdx],
-                                        maxLines = 1,
-                                    )
-                                }
-                            }
-                        }
+                    when(clockStyles[clockVisual.styleIdx]){
+                        ClockStyle.DIGITAL_HEARTBEAT -> DigitalHartbeat(
+                            modifier = modifier,
+                            currentTime = currentTime,
+                            clockVisual = clockVisual,
+                            delimiterBlinking = delimiterBlinking
+                        )
+                        ClockStyle.DIGITAL_SECONDS -> DigitalSeconds(
+                            modifier = modifier,
+                            currentTime = currentTime,
+                            clockVisual = clockVisual,
+                            delimiterBlinking = delimiterBlinking
+                        )
                     }
                 }
             }
@@ -232,9 +211,7 @@ fun CLockDisplay(
 
 }
 
-fun returnDelimiter(switch: Boolean, styleIdx: Int): Char {
-    return if (switch && styleIdx == 0) ' ' else ':'
-}
+
 
 @Suppress("ALL")
 @Preview(showBackground = true)
@@ -246,7 +223,7 @@ fun Preview() {
 
         Surface {
             CLockDisplay(
-               clockVisual = ClockVisual(6,8,0),
+               clockVisual = ClockVisual(6,8,1),
                 callback = { cv -> }
             )
         }
