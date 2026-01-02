@@ -18,3 +18,5 @@ There are multiple fonts, colors, and time formats to choose from.
 
 Nightclock will work on any Android device, but on non-OLED displays it will not be power efficient, as the backlight
 remains on while the app is running.
+
+![Nightclock Demo](media/demo.gif)
